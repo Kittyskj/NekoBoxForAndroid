@@ -189,7 +189,11 @@ class VpnService : BaseVpnService(),
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && DataStore.appendHttpProxy) {
-            builder.setHttpProxy(ProxyInfo.buildDirectProxy(LOCALHOST, DataStore.mixedPort))
+            if (!DataStore.enableLocalProxyAuth) {
+                builder.setHttpProxy(ProxyInfo.buildDirectProxy(LOCALHOST, DataStore.mixedPort))
+            } else {
+                Logs.w("System HTTP Proxy appending skipped: Local Proxy Auth is enabled.")
+            }
         }
 
         metered = DataStore.meteredNetwork
