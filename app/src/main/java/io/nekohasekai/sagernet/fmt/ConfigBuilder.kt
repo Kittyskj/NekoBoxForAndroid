@@ -235,6 +235,20 @@ fun buildConfig(
                     domain_strategy = genDomainStrategy(DataStore.resolveDestination)
                     sniff = needSniff
                     sniff_override_destination = needSniffOverride
+                    
+                    if (DataStore.enableLocalProxyAuth) {
+                        val authUser = DataStore.localProxyUsername
+                        val authPass = DataStore.localProxyPassword
+                        if (!authUser.isNullOrBlank() && !authPass.isNullOrBlank()) {
+                            _hack_config_map["users"] = listOf(
+                                mapOf(
+                                    "username" to authUser,
+                                    "password" to authPass
+                                )
+                            )
+                            _hack_config_map["set_udp"] = false
+                        }
+                    }
                 })
             }
         }
