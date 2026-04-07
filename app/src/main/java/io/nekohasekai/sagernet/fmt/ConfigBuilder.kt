@@ -196,43 +196,47 @@ fun buildConfig(
         inbounds = mutableListOf()
 
         if (!forTest) {
-            if (isVPN) inbounds.add(Inbound_TunOptions().apply {
-                type = "tun"
-                tag = "tun-in"
-                stack = when (DataStore.tunImplementation) {
-                    TunImplementation.GVISOR -> "gvisor"
-                    TunImplementation.SYSTEM -> "system"
-                    else -> "mixed"
-                }
-                endpoint_independent_nat = true
-                mtu = DataStore.mtu
-                domain_strategy = genDomainStrategy(DataStore.resolveDestination)
-                sniff = needSniff
-                sniff_override_destination = needSniffOverride
-                when (ipv6Mode) {
-                    IPv6Mode.DISABLE -> {
-                        inet4_address = listOf(VpnService.PRIVATE_VLAN4_CLIENT + "/28")
+            if (isVPN) {
+                inbounds.add(Inbound_TunOptions().apply {
+                    type = "tun"
+                    tag = "tun-in"
+                    stack = when (DataStore.tunImplementation) {
+                        TunImplementation.GVISOR -> "gvisor"
+                        TunImplementation.SYSTEM -> "system"
+                        else -> "mixed"
                     }
+                    endpoint_independent_nat = true
+                    mtu = DataStore.mtu
+                    domain_strategy = genDomainStrategy(DataStore.resolveDestination)
+                    sniff = needSniff
+                    sniff_override_destination = needSniffOverride
+                    when (ipv6Mode) {
+                        IPv6Mode.DISABLE -> {
+                            inet4_address = listOf(VpnService.PRIVATE_VLAN4_CLIENT + "/28")
+                        }
 
-                    IPv6Mode.ONLY -> {
-                        inet6_address = listOf(VpnService.PRIVATE_VLAN6_CLIENT + "/126")
-                    }
+                        IPv6Mode.ONLY -> {
+                            inet6_address = listOf(VpnService.PRIVATE_VLAN6_CLIENT + "/126")
+                        }
 
-                    else -> {
-                        inet4_address = listOf(VpnService.PRIVATE_VLAN4_CLIENT + "/28")
-                        inet6_address = listOf(VpnService.PRIVATE_VLAN6_CLIENT + "/126")
+                        else -> {
+                            inet4_address = listOf(VpnService.PRIVATE_VLAN4_CLIENT + "/28")
+                            inet6_address = listOf(VpnService.PRIVATE_VLAN6_CLIENT + "/126")
+                        }
                     }
-                }
-            })
-            inbounds.add(Inbound_MixedOptions().apply {
-                type = "mixed"
-                tag = TAG_MIXED
-                listen = bind
-                listen_port = DataStore.mixedPort
-                domain_strategy = genDomainStrategy(DataStore.resolveDestination)
-                sniff = needSniff
-                sniff_override_destination = needSniffOverride
-            })
+                })
+            }
+            if (!isVPN || DataStore.allowAccess) {
+                inbounds.add(Inbound_MixedOptions().apply {
+                    type = "mixed"
+                    tag = TAG_MIXED
+                    listen = bind
+                    listen_port = DataStore.mixedPort
+                    domain_strategy = genDomainStrategy(DataStore.resolveDestination)
+                    sniff = needSniff
+                    sniff_override_destination = needSniffOverride
+                })
+            }
         }
 
         outbounds = mutableListOf()
