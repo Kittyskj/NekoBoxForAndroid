@@ -20,6 +20,7 @@ import io.nekohasekai.sagernet.ktx.string
 import io.nekohasekai.sagernet.ktx.stringToInt
 import io.nekohasekai.sagernet.ktx.stringToIntIfExists
 import moe.matsuri.nb4a.TempDatabase
+import java.util.UUID
 
 object DataStore : OnPreferenceDataStoreChangeListener {
 
@@ -108,6 +109,10 @@ object DataStore : OnPreferenceDataStoreChangeListener {
     var bypassLanInCore by configurationStore.boolean(Key.BYPASS_LAN_IN_CORE)
 
     var allowAccess by configurationStore.boolean(Key.ALLOW_ACCESS)
+    var enableLocalProxyAuth by configurationStore.boolean("enable_local_proxy_auth") { false }
+    var localProxyUsername by configurationStore.string("local_proxy_username") { "neko_user" }
+    var localProxyPassword by configurationStore.string("local_proxy_password") { UUID.randomUUID().toString().replace("-", "").substring(0, 12) }
+
     var speedInterval by configurationStore.stringToInt(Key.SPEED_INTERVAL)
     var showGroupInNotification by configurationStore.boolean("showGroupInNotification")
 
