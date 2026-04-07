@@ -199,8 +199,8 @@
             app:defaultValue="false"
             app:icon="@drawable/ic_baseline_security_24"
             app:key="enable_local_proxy_auth"
-            app:summary="Включает авторизацию SOCKS5/HTTP для защиты от сканирования портов. Отключает UDP и системный прокси."
-            app:title="Защитить локальный прокси" />
+            app:summary="@string/enable_local_proxy_auth_summary"
+            app:title="@string/enable_local_proxy_auth_title" />
             
         <SwitchPreference
             app:defaultValue="false"
